@@ -19,7 +19,7 @@
 #PBS -m a
 
 #! application name
-application="./skeleton2-heated-plate.exe"
+application="./stencil.exe"
 
 #! Run options for the application
 options=""

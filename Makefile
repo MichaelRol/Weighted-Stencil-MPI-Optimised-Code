@@ -2,9 +2,9 @@
 # Makefile to build example MPI programs 
 #
 
-EXE=skeleton2-heated-plate.exe
+EXE=stencil.exe
 
-EXES=$(EXE1)
+EXES=$(EXE)
 
 CFLAGS=-Wall -g -DDEBUG
 
