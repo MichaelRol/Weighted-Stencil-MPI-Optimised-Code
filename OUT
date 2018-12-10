@@ -1,22 +1,6 @@
-Running on host node31-031
-Time is Mon Dec 10 21:10:26 GMT 2018
+Running on host node31-029
+Time is Mon Dec 10 21:23:06 GMT 2018
 Directory is /panfs/panasas01/cosc/mr16338/IHPC-CW2
-PBS job ID is 7807573.master.cm.cluster
+PBS job ID is 7807628.master.cm.cluster
 This jobs runs on the following machines:
-node31-031
-
-===================================================================================
-=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
-=   PID 1140 RUNNING AT node31-031
-=   EXIT CODE: 11
-=   CLEANING UP REMAINING PROCESSES
-=   YOU CAN IGNORE THE BELOW CLEANUP MESSAGES
-===================================================================================
-
-===================================================================================
-=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
-=   PID 1140 RUNNING AT node31-031
-=   EXIT CODE: 11
-=   CLEANING UP REMAINING PROCESSES
-=   YOU CAN IGNORE THE BELOW CLEANUP MESSAGES
-===================================================================================
+node31-029

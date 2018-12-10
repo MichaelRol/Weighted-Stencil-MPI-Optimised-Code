@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
 
     //Init to 0
     for (y = 0; y < ny; y++) {
-        for (x = 0; x < nx; y++) {
+        for (x = 0; x < nx; x++) {
             image[y*ny+x] = 0.0f;
             tmp_image[y*ny+x] = 0.0f;
         }
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
            for (int jj = j*ny/8; jj < (j+1)*ny/8; jj++) {
                for (int ii = i*nx/8; ii < (i+1)*nx/8; ii++) {
                    if((i+j)%2) image[jj+ii*ny] = 100.0f;
-               }
+              }
            }
        }
     }
