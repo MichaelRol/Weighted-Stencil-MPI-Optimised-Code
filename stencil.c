@@ -6,7 +6,7 @@
 #define MASTER 0
 #define OUTPUT_FILE "stencil.pgm"
 
-int calc_nrows_from_rank(int rank, int size);
+int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 
 int main(int argc, char* argv[]) {
@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int local_nrows = calc_nrows_from_rank(rank, size);
+    int local_nrows = calc_nrows_from_rank(rank, size, ny);
     int local_ncols = nx;
     float *image;
     float *tmp_image;
@@ -67,10 +67,6 @@ int main(int argc, char* argv[]) {
        }
     }
 
-
-
-    printf("RANK of Node: %d\nny: %d\nNCOLS: %d\nLROWS: %d\nLCOLS: %d\n", rank, ny, NCOLS, local_nrows, local_ncols);
-
     MPI_Finalize();
     output_image(OUTPUT_FILE, nx, ny, image);
     return EXIT_SUCCESS;
@@ -78,7 +74,7 @@ int main(int argc, char* argv[]) {
 
 }
 
-int calc_nrows_from_rank(int rank, int size) {
+int calc_nrows_from_rank(int rank, int size, int ny) {
     int nrows;
     
     nrows = ny/size;
