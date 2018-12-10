@@ -3,14 +3,23 @@
 #include <stdlib.h>
 #include "mpi.h"
 
-#define NROWS 1024
-#define NCOLS 1024
 #define MASTER 0
+#define OUTPUT_FILE "stencil.pgm"
 
 int calc_nrows_from_rank(int rank, int size);
+void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 
 int main(int argc, char* argv[]) {
-     
+
+    // Check usage
+    if (argc != 4) {
+      fprintf(stderr, "Usage: %s nx ny niters\n", argv[0]);
+      exit(EXIT_FAILURE);
+    }
+
+    int nx = atoi(argv[1]);
+    int ny = atoi(argv[2]);
+    int niters = atoi(argv[3]);
     int x, y; //rows and columns 
     int right;
     int left;
@@ -20,7 +29,7 @@ int main(int argc, char* argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int local_nrows = calc_nrows_from_rank(rank, size);
-    int local_ncols = NCOLS;
+    int local_ncols = nx;
     float *image;
     float *tmp_image;
     float *sendbuf;
@@ -31,28 +40,28 @@ int main(int argc, char* argv[]) {
     left = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
     right = (rank + 1) % size;
     
-    image = malloc(sizeof(float) * NCOLS * NROWS);
-    tmp_image = malloc(sizeof(float) * NCOLS * NROWS);
+    image = malloc(sizeof(float) * nx * ny);
+    tmp_image = malloc(sizeof(float) * nx * ny);
     
-    sendbuf = malloc(sizeof(float) * local_nrows);
-    recvbuf = malloc(sizeof(float) * local_nrows);
+    sendbuf = malloc(sizeof(float) * local_ncols);
+    recvbuf = malloc(sizeof(float) * local_ncols);
     
     //printbuf = (double*)malloc(sizeof(double) * (remote_nrows + 2));
 
     //Init to 0
-    for (y = 0; y < NROWS; y++) {
-        for (x = 0; x < NCOLS; y++) {
-            image[y*NROWS+x] = 0.0f;
-            tmp_image[y*NROWS+x] = 0.0f;
+    for (y = 0; y < ny; y++) {
+        for (x = 0; x < nx; y++) {
+            image[y*ny+x] = 0.0f;
+            tmp_image[y*ny+x] = 0.0f;
         }
     }
 
     //Init to checkboard
     for (int j = 0; j < 8; j++) {
         for (int i = 0; i < 8; i++) {
-           for (int jj = j*NROWS/8; jj < (j+1)*NROWS/8; jj++) {
-               for (int ii = i*NCOLS/8; ii < (i+1)*NCOLS/8; ii++) {
-                   if((i+j)%2) image[jj+ii*NROWS] = 100.0f;
+           for (int jj = j*ny/8; jj < (j+1)*ny/8; jj++) {
+               for (int ii = i*nx/8; ii < (i+1)*nx/8; ii++) {
+                   if((i+j)%2) image[jj+ii*ny] = 100.0f;
                }
            }
        }
@@ -60,10 +69,10 @@ int main(int argc, char* argv[]) {
 
 
 
-    printf("RANK of Node: %d\nNROWS: %d\nNCOLS: %d\nLROWS: %d\nLCOLS: %d\n", rank, NROWS, NCOLS, local_nrows, local_ncols);
+    printf("RANK of Node: %d\nny: %d\nNCOLS: %d\nLROWS: %d\nLCOLS: %d\n", rank, ny, NCOLS, local_nrows, local_ncols);
 
     MPI_Finalize();
-
+    output_image(OUTPUT_FILE, nx, ny, image);
     return EXIT_SUCCESS;
      
 
@@ -72,11 +81,46 @@ int main(int argc, char* argv[]) {
 int calc_nrows_from_rank(int rank, int size) {
     int nrows;
     
-    nrows = NROWS/size;
-    if ((NROWS % size) != 0) {
-        nrows += NROWS % size;
+    nrows = ny/size;
+    if ((ny % size) != 0) {
+        nrows += ny % size;
     }
 
   return nrows;
+
+}
+
+void output_image(const char * file_name, const int nx, const int ny, float * restrict image) {
+
+  // Open output file
+  FILE *fp = fopen(file_name, "w");
+  if (!fp) {
+    fprintf(stderr, "Error: Could not open %s\n", OUTPUT_FILE);
+    exit(EXIT_FAILURE);
+  }
+
+  // Ouptut image header
+  fprintf(fp, "P5 %d %d 255\n", nx, ny);
+
+  // Calculate maximum value of image
+  // This is used to rescale the values
+  // to a range of 0-255 for output
+  float  maximum = 0.0f;
+  for (int j = 0; j < ny; ++j) {
+    for (int i = 0; i < nx; ++i) {
+      if (image[j+i*ny] > maximum)
+        maximum = image[j+i*ny];
+    }
+  }
+
+  // Output image, converting to numbers 0-255
+  for (int j = 0; j < ny; ++j) {
+    for (int i = 0; i < nx; ++i) {
+      fputc((char)(255.0*image[j+i*ny]/maximum), fp);
+    }
+  }
+
+  // Close the file
+  fclose(fp);
 
 }
