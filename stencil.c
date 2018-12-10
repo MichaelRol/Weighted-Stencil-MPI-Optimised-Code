@@ -8,6 +8,7 @@
 
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
+void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
 
 int main(int argc, char* argv[]) {
 
@@ -48,6 +49,18 @@ int main(int argc, char* argv[]) {
     
     //printbuf = (double*)malloc(sizeof(double) * (remote_nrows + 2));
 
+    init_image(nx, ny, image, tmp_image);
+
+    if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
+    MPI_Finalize();
+    return EXIT_SUCCESS;
+     
+
+}
+
+// Create the input image
+void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image) {
+
     //Init to 0
     for (y = 0; y < ny; y++) {
         for (x = 0; x < nx; x++) {
@@ -66,12 +79,6 @@ int main(int argc, char* argv[]) {
            }
        }
     }
-
-    if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
-    MPI_Finalize();
-    return EXIT_SUCCESS;
-     
-
 }
 
 int calc_nrows_from_rank(int rank, int size, int ny) {
