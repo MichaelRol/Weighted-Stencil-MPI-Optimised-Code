@@ -6,7 +6,7 @@ EXE=stencil.exe
 
 EXES=$(EXE)
 
-CFLAGS=-Wall -g -DDEBUG
+CFLAGS=-Wall -g -DDEBUG -std=c99
 
 all: $(EXES)
 
