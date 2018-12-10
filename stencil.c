@@ -62,8 +62,8 @@ int main(int argc, char* argv[]) {
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image) {
 
     //Init to 0
-    for (y = 0; y < ny; y++) {
-        for (x = 0; x < nx; x++) {
+    for (int y = 0; y < ny; y++) {
+        for (int x = 0; x < nx; x++) {
             image[y*ny+x] = 0.0f;
             tmp_image[y*ny+x] = 0.0f;
         }
