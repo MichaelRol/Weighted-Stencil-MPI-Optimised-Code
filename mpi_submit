@@ -40,7 +40,7 @@ echo This jobs runs on the following machines:
 echo `cat $PBS_NODEFILE | uniq`
  
 #! Create a machine file for MPI
-cat $PBS_NODEFILE > machine.file.$PBS_JOBID
+cat $PBS_NODEFILE > MachineFiles/machine.file.$PBS_JOBID
 
 numnodes=`wc $PBS_NODEFILE | awk '{ print $1 }'`
 

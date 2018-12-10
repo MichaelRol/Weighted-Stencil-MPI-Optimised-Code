@@ -1,0 +1,6 @@
+[mpiexec@node31-031] HYDU_parse_hostfile (../../utils/args/args.c:535): unable to open host file: MachineFiles/machine.file.7807560.master.cm.cluster
+[mpiexec@node31-031] machine_file_fn (../../ui/mpich/utils.c:510): error parsing machine file
+[mpiexec@node31-031] match_arg (../../utils/args/args.c:243): match handler returned error
+[mpiexec@node31-031] HYDU_parse_array (../../utils/args/args.c:269): argument matching returned error
+[mpiexec@node31-031] parse_args (../../ui/mpich/utils.c:4498): error parsing input array
+[mpiexec@node31-031] HYD_uii_mpx_get_parameters (../../ui/mpich/utils.c:4819): unable to parse user arguments
