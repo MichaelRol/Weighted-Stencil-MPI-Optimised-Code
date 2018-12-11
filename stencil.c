@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     float *sendbuf;
     float *recvbuf;
     int firstcell = rank * local_nrows;
-    int lastcell = firstcell + locals_nrows - 1;
+    int lastcell = firstcell + local_nrows - 1;
     
     // if (rank == size - 1) {
     //     lastcell = ny - 1;
