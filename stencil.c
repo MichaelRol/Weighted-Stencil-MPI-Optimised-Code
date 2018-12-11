@@ -67,10 +67,13 @@ int main(int argc, char* argv[]) {
     //for (int t = 0; t < niters; t++) {
         stencil(nx, ny, image, tmp_image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
       //  stencil(nx, ny, tmp_image, image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
-   // }
+   //    }
     double toc = wtime();
-
+    free(sendbuf);
+    free(recvbuf);
     if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
+    free(image);
+    free(tmp_image);
     MPI_Finalize();
     return EXIT_SUCCESS;
      
