@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/time.h>
+#include <sys/time.h> 
 #include "mpi.h"
 
 #define MASTER 0
@@ -85,7 +85,9 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
 
-    printf("Did it work? I dunno lets see: %f %f %f %f", recvbuf[0], recvbuf[1], recvbuf[2], recvbuf[3]);
+    for (int x = 0; x < nx; i++) {
+        printf("Row: %d   Value: %f\n", x, recvbuf[x]);
+    }
 }
 
 // Create the input image
