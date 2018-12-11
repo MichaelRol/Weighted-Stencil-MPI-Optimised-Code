@@ -85,7 +85,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
 
-    for (int x = 0; x < nx; i++) {
+    for (int x = 0; x < nx; x++) {
         printf("Row: %d   Value: %f\n", x, recvbuf[x]);
     }
 }
