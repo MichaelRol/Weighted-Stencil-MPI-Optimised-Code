@@ -36,13 +36,13 @@ int main(int argc, char* argv[]) {
     float *sendbuf;
     float *recvbuf;
     int firstcell = rank * local_nrows;
-    int lastcell;
+    int lastcell = firstcell + locals_nrows - 1;
     
-    if (rank == size - 1) {
-        lastcell = ny - 1;
-    } else {
-        lastcell = (rank + 1) * local_nrows - 1;
-    }
+    // if (rank == size - 1) {
+    //     lastcell = ny - 1;
+    // } else {
+    //     lastcell = (rank + 1) * local_nrows - 1;
+    // }
     //int remote_nrows = calc_nrows_from_rank(size - 1, size, ny);
     //float *printbuf;
 
@@ -96,7 +96,7 @@ int calc_nrows_from_rank(int rank, int size, int ny) {
     
     nrows = ny/size;
     if ((ny % size) != 0) {
-        nrows += ny % size;
+        if (rank == size - 1) nrows += ny % size;
     }
 
     return nrows;
