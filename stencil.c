@@ -35,11 +35,15 @@ int main(int argc, char* argv[]) {
     float *tmp_image;
     float *sendbuf;
     float *recvbuf;
-    //int remote_nrows = calc_nrows_from_rank(size - 1, size);
+    int firstcell = rank * local_nrows;
+    int lastcell = (rank + 1) * local_nrows - 1;
+    //int remote_nrows = calc_nrows_from_rank(size - 1, size, ny);
     //float *printbuf;
 
     left = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
     right = (rank + 1) % size;
+    
+    printf("My Rank is: %d. I start at: %d, and end at: %d\nLeft is: %d, Right is: %d\n\n", rank, firstcell, lastcell, left, right);
     
     image = malloc(sizeof(float) * nx * ny);
     tmp_image = malloc(sizeof(float) * nx * ny);
