@@ -10,6 +10,7 @@ int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
 void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstcell, int lastcell, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status);
+double wtime(void);
 
 int main(int argc, char* argv[]) {
 
