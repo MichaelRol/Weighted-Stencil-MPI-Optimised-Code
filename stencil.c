@@ -9,7 +9,7 @@
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
-void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstcell, int lastcell, float * sendbuf, float * recvbuf, int above, int below);
+void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstcell, int lastcell, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status);
 
 int main(int argc, char* argv[]) {
 
@@ -63,8 +63,8 @@ int main(int argc, char* argv[]) {
     init_image(nx, ny, image, tmp_image);
     double tic = wtime();
     for (int t = 0; t < niters; t++) {
-        stencil(nx, ny, image, tmp_image);
-        stencil(nx, ny, tmp_image, image);
+        stencil(nx, ny, image, tmp_image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
+        stencil(nx, ny, tmp_image, image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
     }
     double toc = wtime();
 
