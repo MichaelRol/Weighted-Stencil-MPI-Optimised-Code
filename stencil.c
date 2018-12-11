@@ -64,10 +64,10 @@ int main(int argc, char* argv[]) {
 
     init_image(nx, ny, image, tmp_image);
     double tic = wtime();
-    for (int t = 0; t < niters; t++) {
+    //for (int t = 0; t < niters; t++) {
         stencil(nx, ny, image, tmp_image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
-        stencil(nx, ny, tmp_image, image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
-    }
+      //  stencil(nx, ny, tmp_image, image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
+   // }
     double toc = wtime();
 
     if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
@@ -88,6 +88,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     for (int x = 0; x < nx; x++) {
         printf("Row: %d   Value: %f\n", x, recvbuf[x]);
     }
+
 }
 
 // Create the input image
