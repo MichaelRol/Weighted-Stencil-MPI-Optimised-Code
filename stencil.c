@@ -95,9 +95,9 @@ int calc_nrows_from_rank(int rank, int size, int ny) {
     int nrows;
     
     nrows = ny/size;
-    if ((ny % size) != 0) {
-        if (rank == size - 1) nrows += ny % size;
-    }
+    // if ((ny % size) != 0) {
+    //     if (rank == size - 1) nrows += ny % size;
+    // }
 
     return nrows;
 
