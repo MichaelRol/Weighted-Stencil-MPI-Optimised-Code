@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     int firstcell = rank * local_nrows;
     int lastcell;
     
-    if (rank == size ) {
+    if (rank == size - 1) {
         lastcell = ny - 1;
     } else {
         lastcell = (rank + 1) * local_nrows - 1;
