@@ -9,6 +9,7 @@
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
+void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstcell, int lastcell, float * sendbuf, float * recvbuf, int above, int below);
 
 int main(int argc, char* argv[]) {
 
@@ -22,13 +23,14 @@ int main(int argc, char* argv[]) {
     int ny = atoi(argv[2]);
     int niters = atoi(argv[3]);
     int x, y; //rows and columns 
-    int right;
-    int left;
+    int above;
+    int below;
     int size;
     int rank;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Status status;
     int local_nrows = calc_nrows_from_rank(rank, size, ny);
     int local_ncols = nx;
     float *image;
@@ -36,36 +38,52 @@ int main(int argc, char* argv[]) {
     float *sendbuf;
     float *recvbuf;
     int firstcell = rank * local_nrows;
-    int lastcell;// = firstcell + local_nrows - 1;
-    
+    int lastcell;
+
+    //calculate the starting and ending cells 
     if (rank == size - 1) {
         lastcell = ny - 1;
     } else {
         lastcell = firstcell + local_nrows - 1;
     }
-    //int remote_nrows = calc_nrows_from_rank(size - 1, size, ny);
-    //float *printbuf;
-
-    left = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
-    right = (rank + 1) % size;
     
-    printf("My Rank is: %d. Rows per rank: %d, Start: %d, End: %d\n\n", rank, local_nrows, firstcell, lastcell);
+    //calculate the rank above and below
+    above = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
+    below = (rank + 1) % size;
     
+    //printf("My Rank is: %d. Rows per rank: %d, Start: %d, End: %d\n\n", rank, local_nrows, firstcell, lastcell);
+    
+    //allocate memory for images and bufferers
     image = malloc(sizeof(float) * nx * ny);
     tmp_image = malloc(sizeof(float) * nx * ny);
     
     sendbuf = malloc(sizeof(float) * local_ncols);
     recvbuf = malloc(sizeof(float) * local_ncols);
-    
-    //printbuf = (double*)malloc(sizeof(double) * (remote_nrows + 2));
 
     init_image(nx, ny, image, tmp_image);
+    double tic = wtime();
+    for (int t = 0; t < niters; t++) {
+        stencil(nx, ny, image, tmp_image);
+        stencil(nx, ny, tmp_image, image);
+    }
+    double toc = wtime();
 
     if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
     MPI_Finalize();
     return EXIT_SUCCESS;
      
 
+}
+
+void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstcell, int lastcell, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status) {
+    //send top row above
+    for (int i = 0; i < nx; i++) {
+        sendbuf[i] = image[firstcell * nx + i];
+    }
+    MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
+    MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
+
+    printf("Did it work? I dunno lets see: %f %f %f %f", recvbuf[0], recvbuf[1], recvbuf[2], recvbuf[3]);
 }
 
 // Create the input image
@@ -92,15 +110,9 @@ void init_image(const int nx, const int ny, float * restrict image, float * rest
 }
 
 int calc_nrows_from_rank(int rank, int size, int ny) {
-    int nrows;
-    
+    int nrows; 
     nrows = ny/size;
-    // if ((ny % size) != 0) {
-    //     if (rank == size - 1) nrows += ny % size;
-    // }
-
     return nrows;
-
 }
 
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image) {
@@ -136,4 +148,11 @@ void output_image(const char * file_name, const int nx, const int ny, float * re
     // Close the file
     fclose(fp);
 
+}
+
+// Get the current time in seconds since the Epoch
+double wtime(void) {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec + tv.tv_usec*1e-6;
 }
