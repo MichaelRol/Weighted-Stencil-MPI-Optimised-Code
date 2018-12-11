@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     left = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
     right = (rank + 1) % size;
     
-    printf("My Rank is: %d. Rows per rank: %d\n\n", rank, local_nrows);
+    printf("My Rank is: %d. Rows per rank: %d, Start: %d, End: %d\n\n", rank, local_nrows, firstcell, lastcell);
     
     image = malloc(sizeof(float) * nx * ny);
     tmp_image = malloc(sizeof(float) * nx * ny);
