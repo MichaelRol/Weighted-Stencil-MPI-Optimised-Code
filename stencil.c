@@ -14,8 +14,8 @@ int main(int argc, char* argv[]) {
 
     // Check usage
     if (argc != 4) {
-      fprintf(stderr, "Usage: %s nx ny niters\n", argv[0]);
-      exit(EXIT_FAILURE);
+        fprintf(stderr, "Usage: %s nx ny niters\n", argv[0]);
+        exit(EXIT_FAILURE);
     }
 
     int nx = atoi(argv[1]);
@@ -36,7 +36,13 @@ int main(int argc, char* argv[]) {
     float *sendbuf;
     float *recvbuf;
     int firstcell = rank * local_nrows;
-    int lastcell = (rank + 1) * local_nrows - 1;
+    int lastcell;
+    
+    if (rank == size ) {
+        lastcell = ny - 1;
+    } else {
+        lastcell = (rank + 1) * local_nrows - 1;
+    }
     //int remote_nrows = calc_nrows_from_rank(size - 1, size, ny);
     //float *printbuf;
 
@@ -93,41 +99,41 @@ int calc_nrows_from_rank(int rank, int size, int ny) {
         nrows += ny % size;
     }
 
-  return nrows;
+    return nrows;
 
 }
 
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image) {
 
   // Open output file
-  FILE *fp = fopen(file_name, "w");
-  if (!fp) {
-    fprintf(stderr, "Error: Could not open %s\n", OUTPUT_FILE);
-    exit(EXIT_FAILURE);
-  }
-
-  // Ouptut image header
-  fprintf(fp, "P5 %d %d 255\n", nx, ny);
-
-  // Calculate maximum value of image
-  // This is used to rescale the values
-  // to a range of 0-255 for output
-  float  maximum = 0.0f;
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
-      if (image[j+i*ny] > maximum)
-        maximum = image[j+i*ny];
+    FILE *fp = fopen(file_name, "w");
+    if (!fp) {
+        fprintf(stderr, "Error: Could not open %s\n", OUTPUT_FILE);
+        exit(EXIT_FAILURE);
     }
-  }
 
-  // Output image, converting to numbers 0-255
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
-      fputc((char)(255.0*image[j+i*ny]/maximum), fp);
+    // Ouptut image header
+    fprintf(fp, "P5 %d %d 255\n", nx, ny);
+
+    // Calculate maximum value of image
+    // This is used to rescale the values
+    // to a range of 0-255 for output
+    float  maximum = 0.0f;
+    for (int j = 0; j < ny; ++j) {
+        for (int i = 0; i < nx; ++i) {
+            if (image[j+i*ny] > maximum)
+              maximum = image[j+i*ny];
+        }
     }
-  }
 
-  // Close the file
-  fclose(fp);
+    // Output image, converting to numbers 0-255
+    for (int j = 0; j < ny; ++j) {
+        for (int i = 0; i < nx; ++i) {
+            fputc((char)(255.0*image[j+i*ny]/maximum), fp);
+        }
+    }
+
+    // Close the file
+    fclose(fp);
 
 }
