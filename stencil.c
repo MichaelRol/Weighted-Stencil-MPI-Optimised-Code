@@ -87,7 +87,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     }
     MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-if (rank == 0) {
+
       //if top section
     if (firstrow == 0) {
 
@@ -119,13 +119,12 @@ if (rank == 0) {
     printf("Hi%d\n", firstrow);
     //left side column - FIX
     for(int j = 1; j < nx - 1; ++j){
-        //if (firstrow == 0) printf("%d\n",(firstrow + j + 1) * nx);
         tmp_image[(firstrow + j) * nx] = image[(firstrow + j) * nx] * 0.6f;// + (image[(firstrow + j - 1) * nx] + image[(firstrow + j + 1) * nx] + image[(firstrow + j) * nx + 1]) * 0.1f;
     }
 
     //right side column - FIX
     for(int j = 1; j < nx - 1; ++j){
-        tmp_image[(firstrow + j + 1) * nx - 1] = image[(firstrow + j + 1) * nx - 1] * 0.6f + (image[(firstrow + j + 1) * nx - 2] + image[(firstrow + j) * nx - 1] + image[(firstrow + j + 2) * nx + 1]) * 0.1f;
+        tmp_image[(firstrow + j + 1) * nx - 1] = image[(firstrow + j + 1) * nx - 1];// * 0.6f + (image[(firstrow + j + 1) * nx - 2] + image[(firstrow + j) * nx - 1] + image[(firstrow + j + 2) * nx + 1]) * 0.1f;
     }
 
     //inner grid
@@ -139,10 +138,10 @@ if (rank == 0) {
     for (int i = 0; i < nx; i++) {
         sendbuf[i] = image[firstrow * nx + i];
     }
-}
+
     MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
-if (rank == 0) {
+
     //if last section
     if (lastrow == ny - 1) {
 
@@ -171,7 +170,7 @@ if (rank == 0) {
         //bottom right cell
         tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
-}
+
     printf("Fin\n");
 
 }
