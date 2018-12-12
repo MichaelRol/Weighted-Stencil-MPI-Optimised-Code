@@ -116,7 +116,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
 
         //top row 
         for(int i = 1; i < nx - 1; ++i){
-            tmp_image[firstrow * nx + i] = image[firstrow * nx + i] * 0.6f + (image[firstcell * nx + i - 1] + image[firstcell * nx + i + 1] + image[(firstcell + 1)* nx + i] + recvbuf[i]) * 0.1f;
+            tmp_image[firstrow * nx + i] = image[firstrow * nx + i] * 0.6f + (image[firstrow * nx + i - 1] + image[firstrow * nx + i + 1] + image[(firstrow + 1)* nx + i] + recvbuf[i]) * 0.1f;
         }
 
         //top right cell
