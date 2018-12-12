@@ -68,10 +68,13 @@ int main(int argc, char* argv[]) {
         stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
         stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
     }
+
     double toc = wtime();
     free(sendbuf);
     free(recvbuf);
-    if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
+    char num[1];
+    itoa(rank, num, 10);
+    if (rank == MASTER) output_image(OUTPUT_FILE + num, nx, ny, image);
     free(image);
     free(tmp_image);
     MPI_Finalize();
