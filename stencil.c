@@ -119,7 +119,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
 
     //left side column - FIX
     for(int j = 1; j < nx - 1; ++j){
-        printf((firstrow + j) * nx);
+        printf("%d",(firstrow + j) * nx);
         tmp_image[(firstrow + j) * nx] = image[(firstrow + j) * nx] * 0.6f;// + (image[(firstrow + j - 1) * nx] + image[(firstrow + j + 1) * nx] + image[(firstrow + j) * nx + 1]) * 0.1f;
     }
 
