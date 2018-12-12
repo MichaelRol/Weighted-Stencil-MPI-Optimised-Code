@@ -66,12 +66,12 @@ int main(int argc, char* argv[]) {
     double tic = wtime();
     //for (int t = 0; t < niters; t++) {
         if (rank == 0) {
-            stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
+            stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
 
         } else {
             printf("lol\n");
         }
-        //stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
+        //stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
    //    }
     double toc = wtime();
     free(sendbuf);
