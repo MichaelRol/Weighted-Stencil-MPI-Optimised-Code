@@ -10,7 +10,7 @@
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
-void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstcell, int lastcell, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status);
+void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status);
 double wtime(void);
 
 int main(int argc, char* argv[]) {
@@ -39,21 +39,21 @@ int main(int argc, char* argv[]) {
     float *tmp_image;
     float *sendbuf;
     float *recvbuf;
-    int firstcell = rank * local_nrows;
-    int lastcell;
+    int firstrow = rank * local_nrows;
+    int lastrow;
 
-    //calculate the starting and ending cells 
+    //calculate the starting and ending rows 
     if (rank == size - 1) {
-        lastcell = ny - 1;
+        lastrow = ny - 1;
     } else {
-        lastcell = firstcell + local_nrows - 1;
+        lastrow = firstrow + local_nrows - 1;
     }
     
     //calculate the rank above and below
     above = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
     below = (rank + 1) % size;
     
-    //printf("My Rank is: %d. Rows per rank: %d, Start: %d, End: %d\n\n", rank, local_nrows, firstcell, lastcell);
+    //printf("My Rank is: %d. Rows per rank: %d, Start: %d, End: %d\n\n", rank, local_nrows, firstrow, lastrow);
     
     //allocate memory for images and bufferers
     image = malloc(sizeof(float) * nx * ny);
@@ -65,8 +65,8 @@ int main(int argc, char* argv[]) {
     init_image(nx, ny, image, tmp_image);
     double tic = wtime();
     //for (int t = 0; t < niters; t++) {
-        stencil(nx, ny, image, tmp_image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
-      //  stencil(nx, ny, tmp_image, image, firstcell, lastcell, sendbuf, recvbuf, above, below, status);
+        stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
+      //  stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
    //    }
     double toc = wtime();
     free(sendbuf);
@@ -80,19 +80,103 @@ int main(int argc, char* argv[]) {
 
 }
 
-void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstcell, int lastcell, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status) {
-    //send top row above
+void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status) {
+    //send bottom row below and recieve above row 
     for (int i = 0; i < nx; i++) {
-        sendbuf[i] = image[firstcell * nx + i];
+        sendbuf[i] = image[lastrow * nx + i];
     }
-    MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
-    MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
+    MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
+    MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
     if (below == 1){
         for (int x = 0; x < nx; x++) {
             printf("Row: %d   Value: %f\n", x, recvbuf[x]);
         }
 
     }
+
+      //if top section
+    if (firstrow == 0) {
+
+        //top left cell
+        tmp_image[0] = image[0] * 0.6f + (image[nx] + image[1]) * 0.1f;
+        
+        //top row
+        for(int i = 1; i < ny - 1; ++i){
+            tmp_image[i] = image[i] * 0.6f + (image[i - 1] + image[i + 1] + image[ny + i]) * 0.1f;
+        }
+
+        //top right cell
+        tmp_image[nx-1] = image[nx-1] * 0.6f + (image[nx-2] + image[2 * nx-1]) * 0.1f;
+        
+    //any other section
+    } else {
+
+        //top left
+        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + recvbuf[0]) * 0.1f;
+
+        //top row 
+        for(int i = 1; i < nx - 1; ++i){
+            tmp_image[firstrow * nx + i] = image[firstrow * nx + i] * 0.6f + (image[firstcell * nx + i - 1] + image[firstcell * nx + i + 1] + image[(firstcell + 1)* nx + i] + recvbuf[i]) * 0.1f;
+        }
+
+        //top right cell
+        tmp_image[(firstrow + 1) * nx - 1] = image[(firstrow + 1) * nx - 1] * 0.6f + (image[(firstrow + 1) * nx - 2] + image[(firstrow + 2) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
+    }
+
+
+    //left side column
+    for(int j = 1; j < nx - 1; ++j){
+        tmp_image[(firstrow + j) * nx] = image[(firstrow + j) * nx] * 0.6f + (image[(firstrow + j - 1) * nx] + image[(firstrow + j + 1) * nx] + image[(firstrow + j) * nx + 1]) * 0.1f;
+    }
+
+    //right side column
+    for(int j = 1; j < nx - 1; ++j){
+        tmp_image[(firstrow + j + 1) * nx - 1] = image[(firstrow + j + 1) * nx - 1] * 0.6f + (image[(firstrow + j + 1) * nx - 2] + image[(firstrow + j) * nx - 1] + image[(firstrow + j + 2) * nx + 1]) * 0.1f;
+    }
+
+    //inner grid
+    for (int i = firstrow + 1; i < lastrow; ++i) {
+        for (int j = 1; j < nx - 1; ++j) {
+        tmp_image[j+i*ny] = image[j+i*ny] * 0.6f + (image[j  +(i-1)*ny] + image[j  +(i+1)*ny] + image[j-1+i*ny] + image[j+1+i*ny]) * 0.1f;
+        }
+    }
+
+    //send top row above and recieve row below 
+    for (int i = 0; i < nx; i++) {
+        sendbuf[i] = image[firstrow * nx + i];
+    }
+    MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
+    MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
+
+    //if last section
+    if (lastrow == ny - 1) {
+
+        //bottom left cell
+        tmp_image[(ny - 1) * nx] = image[(ny - 1) * nx] * 0.6f + (image[(ny - 2) * nx] + image[(ny - 1) * nx + 1]) * 0.1f;
+        
+        //bottom row
+        for(int i = 1; i < ny - 1; ++i){
+            tmp_image[(ny - 1) * nx + i] = image[(ny - 1) * nx + i] * 0.6f + (image[(ny - 1) * nx + i + 1] + image[(ny - 1) * nx + i - 1] + image[(ny - 2) * nx + i]) * 0.1f;
+        }
+
+        //bottom right cell
+        tmp_image[nx - 1 + (ny - 1) * nx] = image[nx - 1 + (ny - 1) * nx] * 0.6f + (image[nx - 2 + (ny - 1) * nx] + image[nx - 1 + (ny - 2) * nx]) * 0.1f;
+        
+    //any other section
+    } else {
+
+        //bottom left
+        tmp_image[lastrow * nx] = image[lastrow * nx] * 0.6f + (image[(lastrow - 1) * nx] + image[(lastrow * nx) + 1] + recvbuf[0]) * 0.1f;
+
+        //bottom row 
+        for(int i = 1; i < nx - 1; ++i){
+            tmp_image[lastrow * nx + i] = image[lastrow * nx + i] * 0.6f + (image[lastrow * nx + i - 1] + image[lastrow * nx + i + 1] + image[(lastrow - 1)* nx + i] + recvbuf[i]) * 0.1f;
+        }
+
+        //bottom right cell
+        tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
+    }
+
 
 }
 
