@@ -129,11 +129,11 @@ printf("We got the top bit1\n");
     }
 printf("We got the top bit2\n");
     //inner grid
-    for (int i = firstrow + 1; i < lastrow; ++i) {
-        for (int j = 1; j < nx - 1; ++j) {
-        tmp_image[j+i*ny] = image[j+i*ny] * 0.6f + (image[j  +(i-1)*ny] + image[j  +(i+1)*ny] + image[j-1+i*ny] + image[j+1+i*ny]) * 0.1f;
-        }
-    }
+    // for (int i = firstrow + 1; i < lastrow; ++i) {
+    //     for (int j = 1; j < nx - 1; ++j) {
+    //     tmp_image[j+i*ny] = image[j+i*ny] * 0.6f + (image[j  +(i-1)*ny] + image[j  +(i+1)*ny] + image[j-1+i*ny] + image[j+1+i*ny]) * 0.1f;
+    //     }
+    // }
 printf("We got the top bit3\n");
     //send top row above and recieve row below 
     for (int i = 0; i < nx; i++) {
