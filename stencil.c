@@ -119,7 +119,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
 
     printf("Start: %d. We got the top bit\n", firstrow);
     //left side column - FIX
-    for(int j = 1; j < nx - 1; ++j){
+    for(int j = 1; j < nx - 10; ++j){
         tmp_image[(firstrow + j) * nx] = image[(firstrow + j) * nx] * 0.6f + (image[(firstrow + j - 1) * nx] + image[(firstrow + j + 1) * nx] + image[(firstrow + j) * nx + 1]) * 0.1f;
     }
 printf("Start: %d. We got the top bit1\n", firstrow);
