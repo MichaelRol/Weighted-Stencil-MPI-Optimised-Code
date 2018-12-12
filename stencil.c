@@ -87,7 +87,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     }
     MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-if (rank == 3) {
+if (rank == 0) {
       //if top section
     if (firstrow == 0) {
 
@@ -142,7 +142,7 @@ if (rank == 3) {
 }
     MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
-if (rank == 3) {
+if (rank == 0) {
     //if last section
     if (lastrow == ny - 1) {
 
