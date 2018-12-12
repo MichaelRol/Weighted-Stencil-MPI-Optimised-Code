@@ -73,8 +73,10 @@ int main(int argc, char* argv[]) {
     free(sendbuf);
     free(recvbuf);
     char num[1];
-    itoa(rank, num, 10);
-    if (rank == MASTER) output_image(num, nx, ny, image);
+    if (rank == MASTER) output_image("rank0", nx, ny, image);
+    if (rank == 1) output_image("rank1", nx, ny, image);
+    if (rank == 2) output_image("rank2", nx, ny, image);
+    if (rank == 3) output_image("rank3", nx, ny, image);
     free(image);
     free(tmp_image);
     MPI_Finalize();
