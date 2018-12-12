@@ -118,13 +118,13 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     }
     printf("Hi%d\n", firstrow);
     //left side column - FIX
-    for(int j = 1; j < nx - 1; ++j){
-        tmp_image[(firstrow + j) * 1] = 0;//image[(firstrow + j) * nx] * 0.6f + (image[(firstrow + j - 1) * nx] + image[(firstrow + j + 1) * nx] + image[(firstrow + j) * nx + 1]) * 0.1f;
+    for(int j = firstrow + 1; j < lastrow; ++j){
+        tmp_image[j * nx] = image[j * nx] * 0.6f + (image[(j - 1) * nx] + image[(j + 1) * nx] + image[j * nx + 1]) * 0.1f;
     }
 
     //right side column - FIX
-    for(int j = 1; j < nx - 1; ++j){
-        //tmp_image[(firstrow + j + 1) * nx - 1] = 0;//image[(firstrow + j + 1) * nx - 1] * 0.6f + (image[(firstrow + j + 1) * nx - 2] + image[(firstrow + j) * nx - 1] + image[(firstrow + j + 2) * nx + 1]) * 0.1f;
+    for(int j = firstrow + 1; j < lastrow; ++j){
+        tmp_image[(j + 1) * nx - 1] = 0 + image[(j + 1) * nx - 1] * 0.6f + (image[(j + 1) * nx - 2] + image[j * nx - 1] + image[(j + 2) * nx + 1]) * 0.1f;
     }
 
     //inner grid
