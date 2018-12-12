@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     double tic = wtime();
     //for (int t = 0; t < niters; t++) {
         stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
-        stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
+        //stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
    //    }
     double toc = wtime();
     free(sendbuf);
