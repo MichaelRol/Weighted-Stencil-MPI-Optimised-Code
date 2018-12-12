@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     double tic = wtime();
     //for (int t = 0; t < niters; t++) {
         stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
-      //  stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
+        stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
    //    }
     double toc = wtime();
     free(sendbuf);
@@ -87,13 +87,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     }
     MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    if (below == 1){
-        for (int x = 0; x < nx; x++) {
-            printf("Row: %d   Value: %f\n", x, recvbuf[x]);
-        }
-
-    }
-
+    printf("We recieved");
       //if top section
     if (firstrow == 0) {
 
@@ -123,7 +117,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
         tmp_image[(firstrow + 1) * nx - 1] = image[(firstrow + 1) * nx - 1] * 0.6f + (image[(firstrow + 1) * nx - 2] + image[(firstrow + 2) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
 
-
+    printf("We got the top bit");
     //left side column
     for(int j = 1; j < nx - 1; ++j){
         tmp_image[(firstrow + j) * nx] = image[(firstrow + j) * nx] * 0.6f + (image[(firstrow + j - 1) * nx] + image[(firstrow + j + 1) * nx] + image[(firstrow + j) * nx + 1]) * 0.1f;
@@ -145,6 +139,8 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     for (int i = 0; i < nx; i++) {
         sendbuf[i] = image[firstrow * nx + i];
     }
+
+    printf("We got to the bit were we get from below");
     MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
 
