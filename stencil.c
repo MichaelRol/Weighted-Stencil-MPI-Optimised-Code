@@ -116,10 +116,10 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
         //top right cell
         tmp_image[(firstrow + 1) * nx - 1] = image[(firstrow + 1) * nx - 1] * 0.6f + (image[(firstrow + 1) * nx - 2] + image[(firstrow + 2) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
-    printf("Hi\n");
+    printf("Hi%d\n", firstrow);
     //left side column - FIX
     for(int j = 1; j < nx - 1; ++j){
-        if (firstrow == 256) printf("%d\n",(firstrow + j) * nx);
+        if (firstrow == 0) printf("%d\n",(firstrow + j) * nx);
         tmp_image[(firstrow + j) * nx] = image[(firstrow + j) * nx] * 0.6f;// + (image[(firstrow + j - 1) * nx] + image[(firstrow + j + 1) * nx] + image[(firstrow + j) * nx + 1]) * 0.1f;
     }
 
