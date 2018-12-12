@@ -64,10 +64,10 @@ int main(int argc, char* argv[]) {
 
     init_image(nx, ny, image, tmp_image);
     double tic = wtime();
-    //for (int t = 0; t < niters; t++) {
+    for (int t = 0; t < niters; t++) {
         stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
-        //stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
-   //    }
+        stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
+    }
     double toc = wtime();
     free(sendbuf);
     free(recvbuf);
@@ -116,13 +116,13 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
         //top right cell
         tmp_image[(firstrow + 1) * nx - 1] = image[(firstrow + 1) * nx - 1] * 0.6f + (image[(firstrow + 1) * nx - 2] + image[(firstrow + 2) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
-    printf("Hi%d\n", firstrow);
-    //left side column - FIX
+    
+    //left side column 
     for(int j = firstrow + 1; j < lastrow; ++j){
         tmp_image[j * nx] = image[j * nx] * 0.6f + (image[(j - 1) * nx] + image[(j + 1) * nx] + image[j * nx + 1]) * 0.1f;
     }
 
-    //right side column - FIX
+    //right side column 
     for(int j = firstrow + 1; j < lastrow; ++j){
         tmp_image[(j + 1) * nx - 1] = 0 + image[(j + 1) * nx - 1] * 0.6f + (image[(j + 1) * nx - 2] + image[j * nx - 1] + image[(j + 2) * nx + 1]) * 0.1f;
     }
@@ -171,7 +171,6 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
         tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
 
-    printf("Fin\n");
 
 }
 
