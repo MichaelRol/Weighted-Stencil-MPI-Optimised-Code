@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     init_image(nx, ny, image, tmp_image);
     double tic = wtime();
     //for (int t = 0; t < niters; t++) {
-        if (rank == 0) {
+        if (rank == 1) {
             stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
 
         } else {
