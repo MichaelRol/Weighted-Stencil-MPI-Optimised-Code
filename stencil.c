@@ -124,9 +124,9 @@ if (rank == 0) {
     }
 
     //right side column - FIX
-    // for(int j = 1; j < nx - 1; ++j){
-    //     tmp_image[(firstrow + j + 1) * nx - 1] = image[(firstrow + j + 1) * nx - 1] * 0.6f + (image[(firstrow + j + 1) * nx - 2] + image[(firstrow + j) * nx - 1] + image[(firstrow + j + 2) * nx + 1]) * 0.1f;
-    // }
+    for(int j = 1; j < nx - 1; ++j){
+        tmp_image[(firstrow + j + 1) * nx - 1] = image[(firstrow + j + 1) * nx - 1] * 0.6f + (image[(firstrow + j + 1) * nx - 2] + image[(firstrow + j) * nx - 1] + image[(firstrow + j + 2) * nx + 1]) * 0.1f;
+    }
 
     //inner grid
     for (int i = firstrow + 1; i < lastrow; ++i) {
