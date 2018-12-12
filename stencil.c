@@ -10,7 +10,7 @@
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
-void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status);
+void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status, int rank);
 double wtime(void);
 
 int main(int argc, char* argv[]) {
@@ -65,13 +65,8 @@ int main(int argc, char* argv[]) {
     init_image(nx, ny, image, tmp_image);
     double tic = wtime();
     //for (int t = 0; t < niters; t++) {
-        if (rank == 1) {
-            stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
-
-        } else {
-            printf("lol\n");
-        }
-        //stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status);
+        stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
+        //stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
    //    }
     double toc = wtime();
     free(sendbuf);
@@ -85,14 +80,14 @@ int main(int argc, char* argv[]) {
 
 }
 
-void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status) {
+void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status, int rank) {
     //send bottom row below and recieve above row 
     for (int i = 0; i < nx; i++) {
         sendbuf[i] = image[lastrow * nx + i];
     }
     MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-
+if (rank == 1) {
       //if top section
     if (firstrow == 0) {
 
@@ -144,10 +139,10 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     for (int i = 0; i < nx; i++) {
         sendbuf[i] = image[firstrow * nx + i];
     }
-
+}
     MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
-
+if (rank == 1) {
     //if last section
     if (lastrow == ny - 1) {
 
@@ -176,7 +171,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
         //bottom right cell
         tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
-
+}
     printf("Fin\n");
 
 }
