@@ -5,7 +5,7 @@
 #include "mpi.h"
 
 #define MASTER 0
-//#define OUTPUT_FILE "stencil.pgm"
+#define OUTPUT_FILE "stencil.pgm"
 
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
@@ -106,17 +106,17 @@ int main(int argc, char* argv[]) {
     // ------------------------------------------------------
     //              CHANGE BEFORE SUBMIT
     // ------------------------------------------------------
-    char OUTPUT_FILE[12];
+    char OUTPUT_NAME[12];
     if (nx == 1024) {
-        OUTPUT_FILE = "stencil1.pgm"
+        OUTPUT_NAME = "stencil1.pgm"
     }
     if (nx == 4096) {
-        OUTPUT_FILE = "stencil4.pgm"
+        OUTPUT_NAME = "stencil4.pgm"
     }
     if (nx == 8000) {
-        OUTPUT_FILE = "stencil8.pgm"
+        OUTPUT_NAME = "stencil8.pgm"
     }
-    if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
+    if (rank == MASTER) output_image(OUTPUT_NAME, nx, ny, image);
     free(image);
     free(tmp_image);
     MPI_Finalize();
