@@ -175,7 +175,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
 
     //right side column 
     for(int j = firstrow + 1; j < lastrow; ++j){
-        tmp_image[(j + 1) * nx - 1] = image[(j + 1) * nx - 1] * 0.6f + (image[(j + 1) * nx - 2] + image[j * nx - 1] + image[(j + 2) * nx + 1]) * 0.1f;
+        tmp_image[(j + 1) * nx - 1] = image[(j + 1) * nx - 1] * 0.6f + (image[(j + 1) * nx - 2] + image[j * nx - 1] + image[(j + 2) * nx - 1]) * 0.1f;
     }
 
     //inner grid
