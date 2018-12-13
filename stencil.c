@@ -150,7 +150,7 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     } else {
 
         //top left
-        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + recvbuf[i]) * 0.1f;
+        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + recvbuf[0]) * 0.1f;
 
         //top row 
         for(int i = 1; i < nx - 1; ++i){
