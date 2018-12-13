@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
     // ------------------------------------------------------
     //              CHANGE BEFORE SUBMIT
     // ------------------------------------------------------
-    char *OUTPUT_NAME = stencil1.pgm;
+    char *OUTPUT_NAME = "stencil1.pgm";
 
     if (nx == 4096) {
         OUTPUT_NAME = "stencil4.pgm";
