@@ -201,7 +201,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
         
         //bottom row
         for(int i = 1; i < ny - 1; ++i){
-            tmp_image[(ny * nx + i] = image[(ny) * nx + i] * 0.6f + (image[(ny) * nx + i + 1] + image[(ny) * nx + i - 1] + image[(ny - 1) * nx + i]) * 0.1f;
+            tmp_image[(ny) * nx + i] = image[(ny) * nx + i] * 0.6f + (image[(ny) * nx + i + 1] + image[(ny) * nx + i - 1] + image[(ny - 1) * nx + i]) * 0.1f;
         }
 
         //bottom right cell
