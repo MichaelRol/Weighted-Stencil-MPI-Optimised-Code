@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
     // }
     if (rank == MASTER) {
         for (int i = (lastrow + 1) * nx - 1; i++){
-            image[i] = 0f;
+            image[i] = 0.0f;
         }
     }
 
