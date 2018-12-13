@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     //calculate the rank above and below
     above = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
     below = (rank + 1) % size;
-    printf("%d, %d", above, below);
+    
     //allocate memory for images and bufferers
     image = malloc(sizeof(float) * nx * ny);
     tmp_image = malloc(sizeof(float) * nx * ny);
@@ -74,7 +74,6 @@ int main(int argc, char* argv[]) {
             stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
         }
         double toc = wtime();
-        printf("%lf \n", toc-tic);
     } else {
         double tic = wtime();
         for (int t = 0; t < niters; t++) {
@@ -82,7 +81,9 @@ int main(int argc, char* argv[]) {
             stencil1node(nx, ny, tmp_image, image);
         }
         double toc = wtime();
-        printf("%lf \n", toc-tic);
+    }
+    if (rank == MASTER) {
+        print("%lf", toc-tic);
     }
     free(sendbuf);
     free(recvbuf);
@@ -148,7 +149,7 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     } else {
 
         //top left
-        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + recvbuf[0]) * 0.1f;
+        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + r    * 0.1f;
 
         //top row 
         for(int i = 1; i < nx - 1; ++i){
