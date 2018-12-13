@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
     //     }
     // }
     if (rank == MASTER) {
-        for (int i = (lastrow + 1) * nx - 1; i++){
+        for (int i = (lastrow + 1) * nx - 1; i < (nx - 1) * (ny - 1) + nx - 1; i++){
             image[i] = 0.0f;
         }
     }
