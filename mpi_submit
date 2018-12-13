@@ -13,7 +13,7 @@
 #! Second entry: Total amount of wall-clock time (true, elapsed time). 
 #! 00:05:00 indicates 05 minutes.
 
-#PBS -l nodes=1:ppn=5,walltime=00:02:00
+#PBS -l nodes=1:ppn=1,walltime=00:00:30
 
 #! Mail to user if job aborts
 #PBS -m a
@@ -22,7 +22,9 @@
 application="./stencil.exe"
 
 #! Run options for the application
-options="1024 1024 100"
+options1="1024 1024 100"
+options2="4096 4096 100"
+options3="8000 8000 100"
 
 ###############################################################
 ### You should not have to change anything below this line ####
@@ -45,4 +47,4 @@ cat $PBS_NODEFILE > MachineFiles/machine.file.$PBS_JOBID
 numnodes=`wc $PBS_NODEFILE | awk '{ print $1 }'`
 
 #! Run the parallel MPI executable (nodes*ppn)
-mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options1
