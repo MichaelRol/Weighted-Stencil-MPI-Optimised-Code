@@ -178,7 +178,7 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
         sendbuf[i] = image[firstrow * nx + i];
     }
 
-    MPI_S   end(sendbuf, nx, MPI_FLOAT, 0, 123, MPI_COMM_WORLD);
+    MPI_Send(sendbuf, nx, MPI_FLOAT, 0, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, 0, 123, MPI_COMM_WORLD, &status);
 
     //if last section
