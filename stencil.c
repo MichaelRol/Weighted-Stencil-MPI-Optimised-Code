@@ -142,13 +142,12 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
 
       //if top section
     if (firstrow == 0) {
-        printf("Top\n");
         //top left cell
         tmp_image[0] = image[0] * 0.6f + (image[nx] + image[1]) * 0.1f;
         
         //top row
         for(int i = 1; i < nx - 1; ++i){
-            tmp_image[i] = image[i] * 0.6f + (image[i - 1] + image[i + 1] + image[nx + i]) * 0.1f;
+            tmp_image[i] = 0;//image[i] * 0.6f + (image[i - 1] + image[i + 1] + image[nx + i]) * 0.1f;
         }
 
         //top right cell
@@ -196,7 +195,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
 
     //if last section
     if (lastrow == ny - 1) {
-        printf("Bot\n");
+
         //bottom left cell
         tmp_image[(ny - 1) * nx] = image[(ny - 1) * nx] * 0.6f + (image[(ny - 2) * nx] + image[(ny - 1) * nx + 1]) * 0.1f;
         
