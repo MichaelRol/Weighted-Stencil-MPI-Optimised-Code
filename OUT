@@ -1,6 +1,9 @@
-Running on host node31-029
-Time is Thu Dec 13 00:35:23 GMT 2018
+Running on host node46-017
+Time is Thu Dec 13 00:43:05 GMT 2018
 Directory is /panfs/panasas01/cosc/mr16338/IHPC-CW2
-PBS job ID is 7828447.master.cm.cluster
+PBS job ID is 7828469.master.cm.cluster
 This jobs runs on the following machines:
-node31-029
+node46-017
+1
+2
+3
