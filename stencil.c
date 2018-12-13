@@ -147,7 +147,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
         
         //top row
         for(int i = 1; i < nx - 1; ++i){
-            tmp_image[i] = 255;//image[i] * 0.6f + (image[i - 1] + image[i + 1] + image[nx + i]) * 0.1f;
+            tmp_image[i] = image[i] * 0.6f + (image[i - 1] + image[i + 1] + image[nx + i]) * 0.1f;
         }
 
         //top right cell
@@ -272,15 +272,15 @@ void output_image(const char * file_name, const int nx, const int ny, float * re
     float  maximum = 0.0f;
     for (int j = 0; j < ny; ++j) {
         for (int i = 0; i < nx; ++i) {
-            if (image[j+i*ny] > maximum)
-              maximum = image[j+i*ny];
+            if (image[i+j*nx] > maximum)
+              maximum = image[i+j*nx];
         }
     }
 
     // Output image, converting to numbers 0-255
     for (int j = 0; j < ny; ++j) {
         for (int i = 0; i < nx; ++i) {
-            fputc((char)(255.0*image[j+i*ny]/maximum), fp);
+            fputc((char)(255.0*image[i+j*nx]/maximum), fp);
         }
     }
 
