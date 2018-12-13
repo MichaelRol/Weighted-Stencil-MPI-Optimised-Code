@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     printf("%lf \n", toc-tic);
     free(sendbuf);
     free(recvbuf);
-    printf("%d",image[815*1024+1023]);
+    
     if (rank != MASTER) {
         MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
     } else {
@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < nx; i++) {
-        printf("Row: %d, Val; %d\n", i, image[(i + 1) * nx - 1]);
+        printf("Row: %d, Val; %f\n", i, image[(i + 1) * nx - 1]);
     }
 
     // if (rank != MASTER) {
