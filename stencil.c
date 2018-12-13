@@ -195,7 +195,7 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
 
     //if last section
     if (lastrow == ny - 1) {
-
+        printf("Bot\n");
         //bottom left cell
         tmp_image[(ny - 1) * nx] = image[(ny - 1) * nx] * 0.6f + (image[(ny - 2) * nx] + image[(ny - 1) * nx + 1]) * 0.1f;
         
