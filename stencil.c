@@ -39,6 +39,8 @@ int main(int argc, char* argv[]) {
     float *tmp_image;
     float *sendbuf;
     float *recvbuf;
+    float *sendlargebuf;
+    float *recvlargebuf;
     int firstrow = rank * local_nrows;
     int lastrow;
 
@@ -62,8 +64,13 @@ int main(int argc, char* argv[]) {
     sendbuf = malloc(sizeof(float) * local_ncols);
     recvbuf = malloc(sizeof(float) * local_ncols);
 
+    sendlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
+    recvlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
+
     init_image(nx, ny, image, tmp_image);
+
     double tic = wtime();
+
     for (int t = 0; t < niters; t++) {
         stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
         stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
@@ -72,11 +79,26 @@ int main(int argc, char* argv[]) {
     double toc = wtime();
     free(sendbuf);
     free(recvbuf);
-    char num[1];
-    if (rank == MASTER) output_image("rank0.pgm", nx, ny, image);
-    if (rank == 1) output_image("rank1.pgm", nx, ny, image);
-    if (rank == 2) output_image("rank2.pgm", nx, ny, image);
-    if (rank == 3) output_image("rank3.pgm", nx, ny, image);
+
+    if (rank != MASTER) {
+        MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
+    } else {
+        for (int i = 1; i < size; i++) {
+            MPI_Recv(tmp_image, ny * nx, MPI_FLOAT, i, 123, MPI_COMM_WORLD, status);
+            if (i != size - 1) {
+                for (int j = 0; j < (lastrow + 1) * nx - 1; j++){
+                    image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
+                }
+            } else {
+                for (int j = 0; j < nx * ny - (i * nx * firstcell); j++){
+                    image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
+                }
+            }
+        }
+
+    }
+
+    if (rank == MASTER) output_image("OUTPUT_FILE", nx, ny, image);
     free(image);
     free(tmp_image);
     MPI_Finalize();
