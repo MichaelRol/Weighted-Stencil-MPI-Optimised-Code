@@ -55,8 +55,6 @@ int main(int argc, char* argv[]) {
     above = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
     below = (rank + 1) % size;
     
-    //printf("My Rank is: %d. Rows per rank: %d, Start: %d, End: %d\n\n", rank, local_nrows, firstrow, lastrow);
-    
     //allocate memory for images and bufferers
     image = malloc(sizeof(float) * nx * ny);
     tmp_image = malloc(sizeof(float) * nx * ny);
@@ -97,6 +95,10 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
+    }
+
+    for (int i = 0; i < nx; i++) {
+        printf("Row: %d, Val; %d\n", i, image[(i + 1) * nx - 1]);
     }
 
     // if (rank != MASTER) {
