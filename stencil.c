@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
         toc = wtime();
     }
     if (rank == MASTER) {
-        printf("%lf", toc-tic);
+        printf  ("%lf", toc-tic);
     }
     free(sendbuf);
     free(recvbuf);
@@ -133,7 +133,7 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
 
-      //if top section
+    //if top section
     if (firstrow == 0) {
         //top left cell
         tmp_image[0] = image[0] * 0.6f + (image[nx] + image[1]) * 0.1f;
