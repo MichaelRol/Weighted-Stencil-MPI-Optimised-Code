@@ -97,16 +97,11 @@ int main(int argc, char* argv[]) {
                     image[i * nx * local_nrows + j] = tmp_image[i * nx * local_nrows + j];
                 }
             } else {
-                output_image("pls.pgm", nx, ny, image);
                 for (int j = (lastrow + 1) * i * nx ; j < (nx) * (ny - 1) + nx; j++){
                     image[j] = tmp_image[j];
                 }
             }
         }
-    }
-
-    for (int i = 0; i < nx; i++) {
-        printf("Row: %d, Val; %f\n", i, image[(i + 1) * nx - 1]);
     }
 
     if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
