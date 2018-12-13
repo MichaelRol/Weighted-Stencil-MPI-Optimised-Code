@@ -89,16 +89,18 @@ int main(int argc, char* argv[]) {
                 for (int j = 0; j < (lastrow + 1) * nx - 1; j++){
                     image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
                 }
+                printf("%d\n", i);
             } else {
                 for (int j = 0; j < nx * ny - (i * nx * firstrow); j++){
                     image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
                 }
+                printf("%d\n", i);
             }
         }
 
     }
 
-    if (rank == MASTER) output_image("OUTPUT_FILE", nx, ny, image);
+    if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
     free(image);
     free(tmp_image);
     MPI_Finalize();
