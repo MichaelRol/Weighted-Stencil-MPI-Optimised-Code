@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
         toc = wtime();
     }
     if (rank == MASTER) {
-        printf  ("%lf", toc-tic);
+        printf  ("%lf\n", toc-tic);
     }
     free(sendbuf);
     free(recvbuf);

@@ -48,3 +48,12 @@ numnodes=`wc $PBS_NODEFILE | awk '{ print $1 }'`
 
 #! Run the parallel MPI executable (nodes*ppn)
 mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
+mpirun -np $numnodes -machinefile MachineFiles/machine.file.$PBS_JOBID $application $options2
