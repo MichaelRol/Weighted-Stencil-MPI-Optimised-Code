@@ -67,20 +67,21 @@ int main(int argc, char* argv[]) {
     recvlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
 
     init_image(nx, ny, image, tmp_image);
+    double toc, tic;
     if (size != 1) {
-        double tic = wtime();
+        tic = wtime();
         for (int t = 0; t < niters; t++) {
             stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
             stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
         }
-        double toc = wtime();
+        toc = wtime();
     } else {
-        double tic = wtime();
+        tic = wtime();
         for (int t = 0; t < niters; t++) {
             stencil1node(nx, ny, image, tmp_image);
             stencil1node(nx, ny, tmp_image, image);
         }
-        double toc = wtime();
+        toc = wtime();
     }
     if (rank == MASTER) {
         print("%lf", toc-tic);
@@ -149,7 +150,7 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     } else {
 
         //top left
-        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + r    * 0.1f;
+        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + recvbuf[i]) * 0.1f;
 
         //top row 
         for(int i = 1; i < nx - 1; ++i){
