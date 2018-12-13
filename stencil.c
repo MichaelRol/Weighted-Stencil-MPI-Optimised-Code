@@ -91,8 +91,8 @@ int main(int argc, char* argv[]) {
                 }
             } else {
                 output_image("pls.pgm", nx, ny, image);
-                for (int j = (lastrow + 1) * i - 1; j < (nx - 1) * (ny - 1) + nx - 1; j++){
-                    image[i * nx * local_nrows + j] = tmp_image[i * nx * local_nrows + j];
+                for (int j = (lastrow + 1) * i * nx - 1; j < (nx - 1) * (ny - 1) + nx - 1; j++){
+                    image[j] = tmp_image[j];
                 }
             }
         }
