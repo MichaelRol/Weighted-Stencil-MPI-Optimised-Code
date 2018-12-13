@@ -86,16 +86,14 @@ int main(int argc, char* argv[]) {
         for (int i = 1; i < size; i++) {
             MPI_Recv(tmp_image, ny * nx, MPI_FLOAT, i, 123, MPI_COMM_WORLD, &status);
             if (i != size - 1) {
-            //     for (int j = 0; j < (lastrow + 1) * nx - 1; j++){
-            //         image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
-            //     }
-            //     printf("%d\n", i);
+                for (int j = 0; j < (lastrow + 1) * nx - 1; j++){
+                    image[i * nx * localn_rows + j] = tmp_image[i * nx * localn_rows + j];
+                }
             } else {
                 output_image("pls.pgm", nx, ny, image);
                 for (int j = (lastrow + 1) * i - 1; j < (nx - 1) * (ny - 1) + nx - 1; j++){
-                    image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
+                    image[i * nx * localn_rows + j] = tmp_image[i * nx * localn_rows + j];
                 }
-                printf("%d\n", i);
             }
         }
     }
