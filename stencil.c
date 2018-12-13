@@ -197,15 +197,15 @@ void stencil(const int nx, const int ny, float *  image, float * tmp_image, int 
     if (lastrow == ny - 1) {
 
         //bottom left cell
-        tmp_image[(ny - 1) * nx] = image[(ny - 1) * nx] * 0.6f + (image[(ny - 2) * nx] + image[(ny - 1) * nx + 1]) * 0.1f;
+        tmp_image[(ny) * nx] = image[(ny) * nx] * 0.6f + (image[(ny - 1) * nx] + image[(ny) * nx + 1]) * 0.1f;
         
         //bottom row
         for(int i = 1; i < ny - 1; ++i){
-            tmp_image[(ny - 1) * nx + i] = image[(ny - 1) * nx + i] * 0.6f + (image[(ny - 1) * nx + i + 1] + image[(ny - 1) * nx + i - 1] + image[(ny - 2) * nx + i]) * 0.1f;
+            tmp_image[(ny * nx + i] = image[(ny) * nx + i] * 0.6f + (image[(ny) * nx + i + 1] + image[(ny) * nx + i - 1] + image[(ny - 1) * nx + i]) * 0.1f;
         }
 
         //bottom right cell
-        tmp_image[nx - 1 + (ny - 1) * nx] = image[nx - 1 + (ny - 1) * nx] * 0.6f + (image[nx - 2 + (ny - 1) * nx] + image[nx - 1 + (ny - 2) * nx]) * 0.1f;
+        tmp_image[nx - 1 + (ny) * nx] = image[nx - 1 + (ny) * nx] * 0.6f + (image[nx - 2 + (ny) * nx] + image[nx - 1 + (ny - 1) * nx]) * 0.1f;
         
     //any other section
     } else {
