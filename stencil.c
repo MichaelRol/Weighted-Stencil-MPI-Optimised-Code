@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
     printf("%lf \n", toc-tic);
     free(sendbuf);
     free(recvbuf);
-
+    printf("%d",image[815*1024+1023]);
     if (rank != MASTER) {
         MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
     } else {
