@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     //calculate the rank above and below
     above = (rank == MASTER) ? (rank + size - 1) : (rank - 1);
     below = (rank + 1) % size;
-    
+    printf("%d, %d", above, below);
     //allocate memory for images and bufferers
     image = malloc(sizeof(float) * nx * ny);
     tmp_image = malloc(sizeof(float) * nx * ny);
