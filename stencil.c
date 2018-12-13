@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
         for (int i = 1; i < size; i++) {
             MPI_Recv(tmp_image, ny * nx, MPI_FLOAT, i, 123, MPI_COMM_WORLD, &status);
             if (i != size - 1) {
-                for (int j = 0; j < (lastrow + 1) * nx - 1; j++){
+                for (int j = 0; j < (lastrow + 1) * nx; j++){
                     image[i * nx * local_nrows + j] = tmp_image[i * nx * local_nrows + j];
                 }
             } else {
