@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
                     image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
                 }
             } else {
-                for (int j = 0; j < nx * ny - (i * nx * firstcell); j++){
+                for (int j = 0; j < nx * ny - (i * nx * firstrow); j++){
                     image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
                 }
             }
