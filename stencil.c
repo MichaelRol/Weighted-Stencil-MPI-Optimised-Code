@@ -106,15 +106,13 @@ int main(int argc, char* argv[]) {
     // ------------------------------------------------------
     //              CHANGE BEFORE SUBMIT
     // ------------------------------------------------------
-    char OUTPUT_NAME[12];
-    if (nx == 1024) {
-        OUTPUT_NAME = "stencil1.pgm"
-    }
+    char *OUTPUT_NAME = stencil1.pgm;
+
     if (nx == 4096) {
-        OUTPUT_NAME = "stencil4.pgm"
+        OUTPUT_NAME = "stencil4.pgm";
     }
     if (nx == 8000) {
-        OUTPUT_NAME = "stencil8.pgm"
+        OUTPUT_NAME = "stencil8.pgm";
     }
     if (rank == MASTER) output_image(OUTPUT_NAME, nx, ny, image);
     free(image);
