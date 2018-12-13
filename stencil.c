@@ -80,24 +80,28 @@ int main(int argc, char* argv[]) {
     free(sendbuf);
     free(recvbuf);
 
-    if (rank != MASTER) {
-        MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
-    } else {
-        for (int i = 1; i < size; i++) {
-            MPI_Recv(tmp_image, ny * nx, MPI_FLOAT, i, 123, MPI_COMM_WORLD, &status);
-            if (i != size - 1) {
-                for (int j = 0; j < (lastrow + 1) * nx - 1; j++){
-                    image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
-                }
-                printf("%d\n", i);
-            } else {
-                for (int j = 0; j < nx * ny - (i * nx * firstrow); j++){
-                    image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
-                }
-                printf("%d\n", i);
-            }
+    // if (rank != MASTER) {
+    //     MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
+    // } else {
+    //     for (int i = 1; i < size; i++) {
+    //         MPI_Recv(tmp_image, ny * nx, MPI_FLOAT, i, 123, MPI_COMM_WORLD, &status);
+    //         if (i != size - 1) {
+    //             for (int j = 0; j < (lastrow + 1) * nx - 1; j++){
+    //                 image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
+    //             }
+    //             printf("%d\n", i);
+    //         } else {
+    //             for (int j = 0; j < nx * ny - (i * nx * firstrow); j++){
+    //                 image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
+    //             }
+    //             printf("%d\n", i);
+    //         }
+    //     }
+    // }
+    if (rank == MASTER) {
+        for (int i = (lastrow + 1) * nx - 1; i++){
+            image[i] = 0f;
         }
-
     }
 
     if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
