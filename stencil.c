@@ -91,6 +91,7 @@ int main(int argc, char* argv[]) {
             //     }
             //     printf("%d\n", i);
             } else {
+                output_image("pls.pgm", nx, ny, image);
                 for (int j = (lastrow + 1) * i - 1; j < (nx - 1) * (ny - 1) + nx - 1; j++){
                     image[i * nx * firstrow + j] = tmp_image[i * nx * firstrow + j];
                 }
