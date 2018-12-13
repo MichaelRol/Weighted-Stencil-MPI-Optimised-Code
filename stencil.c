@@ -10,7 +10,8 @@
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
-void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status, int rank);
+void stencil(const int nx, const int ny, float * restrict image, float * restrict tmp_image, int firstrow, int lastrow, float * restrict sendbuf, float * restrict recvbuf, int above, int below, MPI_Status status, int rank);
+void stencil1node(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
 double wtime(void);
 
 int main(int argc, char* argv[]) {
@@ -66,36 +67,43 @@ int main(int argc, char* argv[]) {
     recvlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
 
     init_image(nx, ny, image, tmp_image);
-
-    double tic = wtime();
-
-    for (int t = 0; t < niters; t++) {
-        stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
-        stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
-    }
-
-    double toc = wtime();
-    printf("%lf \n", toc-tic);
+    // if (size != 1) {
+        double tic = wtime();
+        for (int t = 0; t < niters; t++) {
+            stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
+            stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
+        }
+        double toc = wtime();
+        printf("%lf \n", toc-tic);
+    // } else {
+    //     double tic = wtime();
+    //     for (int t = 0; t < niters; t++) {
+    //         stencil1node(nx, ny, image, tmp_image);
+    //         stencil1node(nx, ny, tmp_image, image);
+    //     }
+    //     double toc = wtime();
+    //     printf("%lf \n", toc-tic);
+    // }
     free(sendbuf);
     free(recvbuf);
     
-    if (rank != MASTER) {
-        MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
-    } else {
-        for (int i = 1; i < size; i++) {
-            MPI_Recv(tmp_image, ny * nx, MPI_FLOAT, i, 123, MPI_COMM_WORLD, &status);
-            if (i != size - 1) {
-                for (int j = 0; j < (lastrow + 1) * nx + 1; j++){
-                    image[i * nx * local_nrows + j] = tmp_image[i * nx * local_nrows + j];
-                }
-            } else {
-                output_image("pls.pgm", nx, ny, image);
-                for (int j = (lastrow + 1) * i * nx ; j < (nx) * (ny - 1) + nx; j++){
-                    image[j] = tmp_image[j];
-                }
-            }
-        }
-    }
+    // if (rank != MASTER) {
+    //     MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
+    // } else {
+    //     for (int i = 1; i < size; i++) {
+    //         MPI_Recv(tmp_image, ny * nx, MPI_FLOAT, i, 123, MPI_COMM_WORLD, &status);
+    //         if (i != size - 1) {
+    //             for (int j = 0; j < (lastrow + 1) * nx + 1; j++){
+    //                 image[i * nx * local_nrows + j] = tmp_image[i * nx * local_nrows + j];
+    //             }
+    //         } else {
+    //             output_image("pls.pgm", nx, ny, image);
+    //             for (int j = (lastrow + 1) * i * nx ; j < (nx) * (ny - 1) + nx; j++){
+    //                 image[j] = tmp_image[j];
+    //             }
+    //         }
+    //     }
+    // }
 
     for (int i = 0; i < nx; i++) {
         printf("Row: %d, Val; %f\n", i, image[(i + 1) * nx - 1]);
@@ -110,7 +118,7 @@ int main(int argc, char* argv[]) {
 
 }
 
-void stencil(const int nx, const int ny, float *  image, float * tmp_image, int firstrow, int lastrow, float * sendbuf, float * recvbuf, int above, int below, MPI_Status status, int rank) {
+void stencil(const int nx, const int ny, float * restrict image, float * restrict tmp_image, int firstrow, int lastrow, float * restrict sendbuf, float * restrict recvbuf, int above, int below, MPI_Status status, int rank) {
     //send bottom row below and recieve above row 
     for (int i = 0; i < nx; i++) {
         sendbuf[i] = image[lastrow * nx + i];
