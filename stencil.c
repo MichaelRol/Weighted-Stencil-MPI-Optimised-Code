@@ -57,14 +57,14 @@ int main(int argc, char* argv[]) {
     below = (rank + 1) % size;
     
     //allocate memory for images and bufferers
-    image = _mm_malloc(sizeof(float) * nx * ny);
-    tmp_image = _mm_malloc(sizeof(float) * nx * ny);
+    image = _mm_malloc(sizeof(float) * nx * ny, 64);
+    tmp_image = _mm_malloc(sizeof(float) * nx * ny, 64);
     
-    sendbuf = _mm_malloc(sizeof(float) * local_ncols);
-    recvbuf = _mm_malloc(sizeof(float) * local_ncols);
+    sendbuf = _mm_malloc(sizeof(float) * local_ncols, 64;
+    recvbuf = _mm_malloc(sizeof(float) * local_ncols, 64);
 
-    sendlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1);
-    recvlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1);
+    sendlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1, 64);
+    recvlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1, 64);
 
     init_image(nx, ny, image, tmp_image);
     double toc, tic;
