@@ -25,7 +25,6 @@ int main(int argc, char* argv[]) {
     int nx = atoi(argv[1]);
     int ny = atoi(argv[2]);
     int niters = atoi(argv[3]);
-    int x, y; //rows and columns 
     int above;
     int below;
     int size;
@@ -40,8 +39,6 @@ int main(int argc, char* argv[]) {
     float *tmp_image;
     float *sendbuf;
     float *recvbuf;
-    float *sendlargebuf;
-    float *recvlargebuf;
     int firstrow = rank * local_nrows;
     int lastrow;
 
