@@ -235,7 +235,7 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
         }
 
         //bottom right cell
-        tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + rimage[(lastrow + 1) * nx + nx - 1]) * 0.1f;
+        tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + image[(lastrow + 1) * nx + nx - 1]) * 0.1f;
     }
 
 
