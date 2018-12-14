@@ -57,14 +57,14 @@ int main(int argc, char* argv[]) {
     below = (rank + 1) % size;
     
     //allocate memory for images and bufferers
-    image = malloc(sizeof(float) * nx * ny);
-    tmp_image = malloc(sizeof(float) * nx * ny);
+    image = _mm_malloc(sizeof(float) * nx * ny);
+    tmp_image = _mm_malloc(sizeof(float) * nx * ny);
     
-    sendbuf = malloc(sizeof(float) * local_ncols);
-    recvbuf = malloc(sizeof(float) * local_ncols);
+    sendbuf = _mm_malloc(sizeof(float) * local_ncols);
+    recvbuf = _mm_malloc(sizeof(float) * local_ncols);
 
-    sendlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
-    recvlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
+    sendlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1);
+    recvlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1);
 
     init_image(nx, ny, image, tmp_image);
     double toc, tic;
@@ -86,8 +86,8 @@ int main(int argc, char* argv[]) {
     if (rank == MASTER) {
         printf  ("%lf\n", toc-tic);
     }
-    free(sendbuf);
-    free(recvbuf);
+    _mm_free(sendbuf);
+    _mm_free(recvbuf);
     
     if (rank != MASTER && size != 1) {
         MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
@@ -117,8 +117,8 @@ int main(int argc, char* argv[]) {
         OUTPUT_NAME = "stencil8.pgm";
     }
     if (rank == MASTER) output_image(OUTPUT_NAME, nx, ny, image);
-    free(image);
-    free(tmp_image);
+    _mm_free(image);
+    _mm_free(tmp_image);
     MPI_Finalize();
     return EXIT_SUCCESS;
      
@@ -130,19 +130,19 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     for (int i = 0; i < nx; i++) {
         sendbuf[i] = image[lastrow * nx + i];
     }
-    if (rank % 2 == 0) {
-        MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    } else {
-        MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    }
-    if (rank % 2 == 1) {
-        MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    } else {
-        MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    }
-    // MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    // MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    // MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, below, 123, recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    // if (rank % 2 == 0) {
+    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
+    // } else {
+    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    // }
+    // if (rank % 2 == 1) {
+    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
+    // } else {
+    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    // }
+    // // MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
+    // // MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, below, 123, recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
 
     //if top section
     if (firstrow == 0) {
@@ -193,19 +193,19 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     for (int i = 0; i < nx; i++) {
         sendbuf[i] = image[firstrow * nx + i];
     }
-    if (rank % 2 == 0) {
-        MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    } else {
-        MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    }
-    if (rank % 2 == 1) {
-        MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    } else {
-        MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    }
-    // MPI_Ssend(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
-    // MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
-    // MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, above, 123, recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
+    // if (rank % 2 == 0) {
+    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
+    // } else {
+    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    // }
+    // if (rank % 2 == 1) {
+    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
+    // } else {
+    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    // }
+    // // MPI_Ssend(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
+    // // MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
+    MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, above, 123, recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
 
     //if last section
     if (lastrow == ny - 1) {
