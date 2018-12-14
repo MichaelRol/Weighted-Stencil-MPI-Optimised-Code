@@ -99,18 +99,8 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-    // ------------------------------------------------------
-    //              CHANGE BEFORE SUBMIT
-    // ------------------------------------------------------
-    char *OUTPUT_NAME = "stencil1.pgm";
 
-    if (nx == 4096) {
-        OUTPUT_NAME = "stencil4.pgm";
-    }
-    if (nx == 8000) {
-        OUTPUT_NAME = "stencil8.pgm";
-    }
-    if (rank == MASTER) output_image(OUTPUT_NAME, nx, ny, image);
+    if (rank == MASTER) output_image(OUTPUT_FILE, nx, ny, image);
     free(image);
     free(tmp_image);
     MPI_Finalize();
@@ -120,27 +110,13 @@ int main(int argc, char* argv[]) {
 }
 
 void stencil(const int nx, const int ny, float * restrict image, float * restrict tmp_image, int firstrow, int lastrow, float * restrict sendbuf, float * restrict recvbuf, int above, int below, MPI_Status status, int rank, int size) {
-    //send bottom row below and recieve above row 
-    // for (int i = 0; i < nx; i++) {
-    //     sendbuf[i] = image[lastrow * nx + i];
-    // }
-    // if (rank % 2 == 0) {
-    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    // } else {
-    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    // }
-    // if (rank % 2 == 1) {
-    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    // } else {
-    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    // }
+
     if (rank != size - 1) {
        MPI_Send(&image[lastrow * nx], nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     }
     if (rank != MASTER) {
         MPI_Recv(&image[(firstrow - 1)* nx], nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
     }
-    // MPI_Sendrecv(&image[lastrow * nx], nx, MPI_FLOAT, below, 123, &image[firstrow], nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
 
     //if top section
     if (firstrow == 0) {
@@ -187,27 +163,12 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
         }
     }
 
-    //send top row above and recieve row below 
-    // for (int i = 0; i < nx; i++) {
-    //     sendbuf[i] = image[firstrow * nx + i];
-    // }
-    // if (rank % 2 == 0) {
-    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    // } else {
-    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    // }
-    // if (rank % 2 == 1) {
-    //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    // } else {
-    //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    // }
     if (rank != MASTER) {
         MPI_Send(&image[firstrow * nx], nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     }
     if (rank != size - 1){
         MPI_Recv(&image[(lastrow + 1) * nx], nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
     }
-    // MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, above, 123, recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
 
     //if last section
     if (lastrow == ny - 1) {
