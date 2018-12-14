@@ -197,7 +197,7 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     // } else {
     //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
     // }
-    MPI_Ssend(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
+    MPI_Send(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
     MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
     // MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, above, 123, recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
 
