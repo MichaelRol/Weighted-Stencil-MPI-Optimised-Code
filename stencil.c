@@ -63,9 +63,6 @@ int main(int argc, char* argv[]) {
     sendbuf = malloc(sizeof(float) * local_ncols);
     recvbuf = malloc(sizeof(float) * local_ncols);
 
-    sendlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
-    recvlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
-
     init_image(nx, ny, image, tmp_image);
     double toc, tic;
     if (size != 1) {
