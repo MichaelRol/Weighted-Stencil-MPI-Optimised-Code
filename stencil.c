@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     image = _mm_malloc(sizeof(float) * nx * ny, 64);
     tmp_image = _mm_malloc(sizeof(float) * nx * ny, 64);
     
-    sendbuf = _mm_malloc(sizeof(float) * local_ncols, 64;
+    sendbuf = _mm_malloc(sizeof(float) * local_ncols, 64);
     recvbuf = _mm_malloc(sizeof(float) * local_ncols, 64);
 
     sendlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1, 64);
