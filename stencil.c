@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
     if (rank == MASTER) {
         printf  ("%lf\n", toc-tic);
     }
+    printf  ("%lf\n", toc-tic);
     _mm_free(sendbuf);
     _mm_free(recvbuf);
     
