@@ -230,9 +230,9 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
         tmp_image[lastrow * nx] = image[lastrow * nx] * 0.6f + (image[(lastrow - 1) * nx] + image[(lastrow * nx) + 1] + image[(lastrow + 1) * nx]) * 0.1f;
 
         //bottom row 
-        for(int i = 1; i < nx - 1; ++i){
-            tmp_image[lastrow * nx + i] = image[lastrow * nx + i] * 0.6f + (image[lastrow * nx + i - 1] + image[lastrow * nx + i + 1] + image[(lastrow - 1)* nx + i] + image[(lastrow + 1) * nx + i]) * 0.1f;
-        }
+            for(int i = 1; i < nx - 1; ++i){
+                tmp_image[lastrow * nx + i] = image[lastrow * nx + i] * 0.6f + (image[lastrow * nx + i - 1] + image[lastrow * nx + i + 1] + image[(lastrow - 1)* nx + i] + image[(lastrow + 1) * nx + i]) * 0.1f;
+            }
 
         //bottom right cell
         tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + image[(lastrow + 1) * nx + nx - 1]) * 0.1f;
