@@ -10,7 +10,7 @@
 int calc_nrows_from_rank(int rank, int size, int ny);
 void output_image(const char * file_name, const int nx, const int ny, float * restrict image);
 void init_image(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
-void stencil(const int nx, const int ny, float * restrict image, float * restrict tmp_image, int firstrow, int lastrow, float * restrict sendbuf, float * restrict recvbuf, int above, int below, MPI_Status status, int rank, int size);
+void stencil(const int nx, const int ny, float * restrict image, float * restrict tmp_image, int firstrow, int lastrow, float * restrict sendbuf, float * restrict recvbuf, int above, int below, MPI_Status status, int rank);
 void stencil1node(const int nx, const int ny, float * restrict image, float * restrict tmp_image);
 double wtime(void);
 
@@ -65,8 +65,8 @@ int main(int argc, char* argv[]) {
     if (size != 1) {
         tic = wtime();
         for (int t = 0; t < niters; t++) {
-            stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank, size);
-            stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank, size);
+            stencil(nx, ny, image, tmp_image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
+            stencil(nx, ny, tmp_image, image, firstrow, lastrow, sendbuf, recvbuf, above, below, status, rank);
         }
         toc = wtime();
     } else {
@@ -119,11 +119,11 @@ int main(int argc, char* argv[]) {
 
 }
 
-void stencil(const int nx, const int ny, float * restrict image, float * restrict tmp_image, int firstrow, int lastrow, float * restrict sendbuf, float * restrict recvbuf, int above, int below, MPI_Status status, int rank, int size) {
+void stencil(const int nx, const int ny, float * restrict image, float * restrict tmp_image, int firstrow, int lastrow, float * restrict sendbuf, float * restrict recvbuf, int above, int below, MPI_Status status, int rank) {
     //send bottom row below and recieve above row 
-    // for (int i = 0; i < nx; i++) {
-    //     sendbuf[i] = image[lastrow * nx + i];
-    // }
+    for (int i = 0; i < nx; i++) {
+        sendbuf[i] = image[lastrow * nx + i];
+    }
     // if (rank % 2 == 0) {
     //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     // } else {
@@ -134,13 +134,9 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     // } else {
     //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
     // }
-    if (rank != size - 1) {
-       MPI_Send(&image[lastrow * nx], nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
-    }
-    if (rank != MASTER) {
-        MPI_Recv(&image[(firstrow - 1)* nx], nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
-    }
-    // MPI_Sendrecv(&image[lastrow * nx], nx, MPI_FLOAT, below, 123, &image[firstrow], nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    // // MPI_Send(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
+    // // MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
+    MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, below, 123, recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
 
     //if top section
     if (firstrow == 0) {
@@ -159,15 +155,15 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     } else {
 
         //top left
-        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + image[(firstrow - 1) * nx]) * 0.1f;
+        tmp_image[firstrow * nx] = image[firstrow * nx] * 0.6f + (image[(firstrow + 1) * nx] + image[(firstrow * nx) + 1] + recvbuf[0]) * 0.1f;
 
         //top row 
         for(int i = 1; i < nx - 1; ++i){
-            tmp_image[firstrow * nx + i] = image[firstrow * nx + i] * 0.6f + (image[firstrow * nx + i - 1] + image[firstrow * nx + i + 1] + image[(firstrow + 1)* nx + i] + image[(firstrow - 1) * nx + i]) * 0.1f;
+            tmp_image[firstrow * nx + i] = image[firstrow * nx + i] * 0.6f + (image[firstrow * nx + i - 1] + image[firstrow * nx + i + 1] + image[(firstrow + 1)* nx + i] + recvbuf[i]) * 0.1f;
         }
 
         //top right cell
-        tmp_image[(firstrow + 1) * nx - 1] = image[(firstrow + 1) * nx - 1] * 0.6f + (image[(firstrow + 1) * nx - 2] + image[(firstrow + 2) * nx - 1] + image[(firstrow - 1) * nx + nx - 1]) * 0.1f;
+        tmp_image[(firstrow + 1) * nx - 1] = image[(firstrow + 1) * nx - 1] * 0.6f + (image[(firstrow + 1) * nx - 2] + image[(firstrow + 2) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
     
     //left side column 
@@ -188,9 +184,9 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     }
 
     //send top row above and recieve row below 
-    // for (int i = 0; i < nx; i++) {
-    //     sendbuf[i] = image[firstrow * nx + i];
-    // }
+    for (int i = 0; i < nx; i++) {
+        sendbuf[i] = image[firstrow * nx + i];
+    }
     // if (rank % 2 == 0) {
     //     MPI_Ssend(sendbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD);
     // } else {
@@ -201,13 +197,9 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     // } else {
     //     MPI_Recv(recvbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD, &status);
     // }
-    if (rank != MASTER) {
-        MPI_Send(&image[firstrow * nx], nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
-    }
-    if (rank != size - 1){
-        MPI_Recv(&image[(lastrow + 1) * nx], nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
-    }
-    // MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, above, 123, recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
+    // // MPI_Ssend(sendbuf, nx, MPI_FLOAT, above, 123, MPI_COMM_WORLD);
+    // // MPI_Recv(recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
+    MPI_Sendrecv(sendbuf, nx, MPI_FLOAT, above, 123, recvbuf, nx, MPI_FLOAT, below, 123, MPI_COMM_WORLD, &status);
 
     //if last section
     if (lastrow == ny - 1) {
@@ -227,15 +219,15 @@ void stencil(const int nx, const int ny, float * restrict image, float * restric
     } else {
 
         //bottom left
-        tmp_image[lastrow * nx] = image[lastrow * nx] * 0.6f + (image[(lastrow - 1) * nx] + image[(lastrow * nx) + 1] + image[(lastrow + 1) * nx]) * 0.1f;
+        tmp_image[lastrow * nx] = image[lastrow * nx] * 0.6f + (image[(lastrow - 1) * nx] + image[(lastrow * nx) + 1] + recvbuf[0]) * 0.1f;
 
         //bottom row 
         for(int i = 1; i < nx - 1; ++i){
-            tmp_image[lastrow * nx + i] = image[lastrow * nx + i] * 0.6f + (image[lastrow * nx + i - 1] + image[lastrow * nx + i + 1] + image[(lastrow - 1)* nx + i] + image[(lastrow + 1) * nx + i]) * 0.1f;
+            tmp_image[lastrow * nx + i] = image[lastrow * nx + i] * 0.6f + (image[lastrow * nx + i - 1] + image[lastrow * nx + i + 1] + image[(lastrow - 1)* nx + i] + recvbuf[i]) * 0.1f;
         }
 
         //bottom right cell
-        tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + rimage[(lastrow + 1) * nx + nx - 1]) * 0.1f;
+        tmp_image[(lastrow + 1) * nx - 1] = image[(lastrow + 1) * nx - 1] * 0.6f + (image[(lastrow + 1) * nx - 2] + image[(lastrow) * nx - 1] + recvbuf[nx - 1]) * 0.1f;
     }
 
 
