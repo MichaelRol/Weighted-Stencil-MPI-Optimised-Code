@@ -57,14 +57,14 @@ int main(int argc, char* argv[]) {
     below = (rank + 1) % size;
     
     //allocate memory for images and bufferers
-    image = _mm_malloc(sizeof(float) * nx * ny, 64);
-    tmp_image = _mm_malloc(sizeof(float) * nx * ny, 64);
+    image = malloc(sizeof(float) * nx * ny);
+    tmp_image = malloc(sizeof(float) * nx * ny);
     
-    sendbuf = _mm_malloc(sizeof(float) * local_ncols, 64);
-    recvbuf = _mm_malloc(sizeof(float) * local_ncols, 64);
+    sendbuf = malloc(sizeof(float) * local_ncols);
+    recvbuf = malloc(sizeof(float) * local_ncols);
 
-    sendlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1, 64);
-    recvlargebuf = _mm_malloc(sizeof(float) * (lastrow + 1) * ny - 1, 64);
+    sendlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
+    recvlargebuf = malloc(sizeof(float) * (lastrow + 1) * ny - 1);
 
     init_image(nx, ny, image, tmp_image);
     double toc, tic;
@@ -83,12 +83,11 @@ int main(int argc, char* argv[]) {
         }
         toc = wtime();
     }
-    if (rank == 0) {
+    if (rank == MASTER) {
         printf  ("%lf\n", toc-tic);
     }
-    //printf  ("%lf\n", toc-tic);
-    _mm_free(sendbuf);
-    _mm_free(recvbuf);
+    free(sendbuf);
+    free(recvbuf);
     
     if (rank != MASTER && size != 1) {
         MPI_Send(image, nx * ny, MPI_FLOAT, MASTER, 123, MPI_COMM_WORLD);
@@ -107,7 +106,7 @@ int main(int argc, char* argv[]) {
         }
     }
     // ------------------------------------------------------
-    //               CHANGE BEFORE SUBMIT
+    //              CHANGE BEFORE SUBMIT
     // ------------------------------------------------------
     char *OUTPUT_NAME = "stencil1.pgm";
 
@@ -118,8 +117,8 @@ int main(int argc, char* argv[]) {
         OUTPUT_NAME = "stencil8.pgm";
     }
     if (rank == MASTER) output_image(OUTPUT_NAME, nx, ny, image);
-    _mm_free(image);
-    _mm_free(tmp_image);
+    free(image);
+    free(tmp_image);
     MPI_Finalize();
     return EXIT_SUCCESS;
      
