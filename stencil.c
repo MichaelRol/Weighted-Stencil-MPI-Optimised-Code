@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
         }
     }
     // ------------------------------------------------------
-    //              CHANGE BEFORE SUBMIT
+    //               CHANGE BEFORE SUBMIT
     // ------------------------------------------------------
     char *OUTPUT_NAME = "stencil1.pgm";
 
